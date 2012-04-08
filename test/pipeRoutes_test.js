@@ -31,26 +31,26 @@ vows
     },
     'calling addPipe successfully': {
       topic: function(r) {
-        pipes.add.yields(null);
-        var cb = this.callback;
-        response.send = function(a) { cb(null, a); };
-        r.addPipe(request, response);
+        callAddPipe(r, null, this.callback);
       },
-      'should call send with 200': function(e, d) {
-        assert.equal(d, 200); 
+      'should call send with 201': function(e, d) {
+        assert.equal(d.second, 201); 
       },
     },
     'calling addPipe unsuccessfully': {
       topic: function(r) {
-        pipes.add.yields('ERROR');
-        var cb = this.callback;
-        response.send = function(a) { cb(null, a); };
-        r.addPipe(request, response);
+        callAddPipe(r, 'ERROR', this.callback);
       },      
       'should call send with 500': function(e, d) {
-        assert.equal(d, 500); 
+        assert.equal(d.first, 500); 
       },
     },
   }
 })
 .export(module);
+
+var callAddPipe = function(route, addResult, callback) {
+  pipes.add.yields(addResult);
+  response.send = function(a, b) { callback(null, { first: a, second: b }); };
+  route.addPipe(request, response);  
+};
