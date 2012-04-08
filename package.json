@@ -1,0 +1,30 @@
+{
+    "name": "spoke",
+    "description": "I radiate therefore I am.",
+    "version": "0.0.1",
+    "licenses": [{
+        "type": "MIT",
+        "url": "https://github.com/roylines/spoke/raw/master/LICENSE"
+    }],
+    "author": {
+        "name": "Roy Lines",
+        "url": "https://roylines.co.uk"
+    },
+    "repository": {
+        "type": "git",
+        "url": "http://github.com/roylines/spoke.git"
+    },
+    "dependencies": {
+    },
+    "devDependencies": {
+        "sinon": "1.3.x",
+        "vows": "0.6.x"
+    },
+    "main": "./lib/spoke",
+    "scripts": {
+        "test": "vows test/*_test.js --spec"
+    },
+    "engines": {
+        "node": ">= 0.4.0"
+    }
+}
