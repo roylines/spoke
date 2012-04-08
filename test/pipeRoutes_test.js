@@ -10,7 +10,7 @@ sinon.stub(pipes, 'add').yields(null);
 var app = express.createServer();
 sinon.stub(app, 'post');
 
-var request = { params: { name: 'NAME' } };
+var request = { headers: { host: 'HOST:PORT' } };
 var response = { send: function(status) { } };
 
 vows
@@ -31,26 +31,35 @@ vows
     },
     'calling addPipe successfully': {
       topic: function(r) {
-        callAddPipe(r, null, this.callback);
+        callAddPipe(r, null, 42, this.callback);
       },
       'should call send with 201': function(e, d) {
         assert.equal(d.second, 201); 
       },
+      'should call send with self': function(e, d) {
+        assert.equal(d.first.self, 'http://HOST:PORT/pipe/42');
+      },
+      'should call send with id': function(e, d) {
+       assert.equal(d.first.id, 42 ); 
+      },
     },
     'calling addPipe unsuccessfully': {
       topic: function(r) {
-        callAddPipe(r, 'ERROR', this.callback);
+        callAddPipe(r, 'ERROR', null, this.callback);
       },      
       'should call send with 500': function(e, d) {
         assert.equal(d.first, 500); 
+      },
+      'should call send with no data': function(e, d) {
+        assert.equal(d.second, null); 
       },
     },
   }
 })
 .export(module);
 
-var callAddPipe = function(route, addResult, callback) {
-  pipes.add.yields(addResult);
+var callAddPipe = function(route, addError, addData, callback) {
+  pipes.add.yields(addError, addData);
   response.send = function(a, b) { callback(null, { first: a, second: b }); };
   route.addPipe(request, response);  
 };
