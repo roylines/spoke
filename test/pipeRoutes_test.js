@@ -6,6 +6,8 @@ var assert = require('assert'),
     vows = require('vows');
 
 var app = express.createServer();
+var request = { params: { name: 'NAME' } };
+var response = { send: function(status) { } };
 
 vows
 .describe('pipeRoutes')
@@ -25,6 +27,36 @@ vows
       },
       teardown: function(r) {
         app.post.restore();
+      }
+    },
+    'calling addPipe successfully': {
+      topic: function(r) {
+        sinon.stub(pipes, 'add').yields(null);
+        var cb = this.callback;
+        response.send = function(a) { cb(null, a); };
+        r.addPipe(request, response);
+      },
+      'should call send with 200': function(e, d) {
+        assert.equal(d, 200); 
+      },
+      teardown: function(r) {
+        pipes.add.restore();
+        response.send = function() { };
+      }
+    },
+    'calling addPipe successfully': {
+      topic: function(r) {
+        sinon.stub(pipes, 'add').yields('ERROR');
+        var cb = this.callback;
+        response.send = function(a) { cb(null, a); };
+        r.addPipe(request, response);
+      },
+      'should call send with 500': function(e, d) {
+        assert.equal(d, 500); 
+      },
+      teardown: function(r) {
+        pipes.add.restore();
+        response.send = function() { };
       }
     },
   }
