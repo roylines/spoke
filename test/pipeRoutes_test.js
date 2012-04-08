@@ -5,7 +5,11 @@ var assert = require('assert'),
     sinon = require('sinon'),
     vows = require('vows');
 
+sinon.stub(pipes, 'add').yields(null);
+
 var app = express.createServer();
+sinon.stub(app, 'post');
+
 var request = { params: { name: 'NAME' } };
 var response = { send: function(status) { } };
 
@@ -16,22 +20,18 @@ vows
     topic: pipeRoutes,
     'calling initialise': {
       topic: function(r) {
-        sinon.stub(app, 'post');
         return r.initialise(app);
       },
       'should return app': function(a) {
         assert.equal(a, app);
       },
       'should bind add route': function(a) {
-        assert(app.post.withArgs('/pipe/add/:name', pipes.addPipe).calledOnce);
+        assert(app.post.withArgs('/pipe', pipeRoutes.addPipe).calledOnce);
       },
-      teardown: function(r) {
-        app.post.restore();
-      }
     },
     'calling addPipe successfully': {
       topic: function(r) {
-        sinon.stub(pipes, 'add').yields(null);
+        pipes.add.yields(null);
         var cb = this.callback;
         response.send = function(a) { cb(null, a); };
         r.addPipe(request, response);
@@ -39,25 +39,17 @@ vows
       'should call send with 200': function(e, d) {
         assert.equal(d, 200); 
       },
-      teardown: function(r) {
-        pipes.add.restore();
-        response.send = function() { };
-      }
     },
-    'calling addPipe successfully': {
+    'calling addPipe unsuccessfully': {
       topic: function(r) {
-        sinon.stub(pipes, 'add').yields('ERROR');
+        pipes.add.yields('ERROR');
         var cb = this.callback;
         response.send = function(a) { cb(null, a); };
         r.addPipe(request, response);
-      },
+      },      
       'should call send with 500': function(e, d) {
         assert.equal(d, 500); 
       },
-      teardown: function(r) {
-        pipes.add.restore();
-        response.send = function() { };
-      }
     },
   }
 })
