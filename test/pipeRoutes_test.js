@@ -12,6 +12,7 @@ sinon.stub(app, 'post');
 
 var request = { headers: { host: 'HOST:PORT' } };
 var response = { send: function() { } };
+var samplePipe = { field: 'data' };
 
 vows
 .describe('pipeRoutes')
@@ -29,9 +30,21 @@ vows
         assert.ok(app.post.withArgs('/pipe', pipeRoutes.addPipe).calledOnce);
       }
     },
-    'calling addPipe successfully': {
+    'calling addPipe': {
       topic: function(r) {
+        sinon.stub(pipeRoutes, 'mapPipe').returns(samplePipe);
         callAddPipe(r, null, 42, this.callback);
+      },
+      'should pass mapped pipe': function(e, d) {
+        assert.ok(pipes.add.withArgs(samplePipe).calledOnce); 
+      },
+      teardown: function(e, d) {
+        pipeRoutes.mapPipe.restore();
+      }
+    },
+    'calling addPipe successfully': {
+      topic: function(r) { 
+       callAddPipe(r, null, 42, this.callback);
       },
       'should call send with 201': function(e, d) {
         assert.equal(d.second, 201); 
@@ -59,6 +72,7 @@ vows
 .export(module);
 
 var callAddPipe = function(route, addError, addData, callback) {
+  pipes.add.reset();
   pipes.add.yields(addError, addData);
   response.send = function(a, b) { callback(null, { first: a, second: b }); };
   route.addPipe(request, response);  
