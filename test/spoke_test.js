@@ -1,6 +1,6 @@
 var assert = require('assert'),
     express = require('express'),
-    pipeRoutes = require('../lib/pipeRoutes.js');
+    pipeRoutes = require('../lib/pipeRoutes.js'),
     spoke = require('../lib/spoke.js'),
     sinon = require('sinon'),
     vows = require('vows');

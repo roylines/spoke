@@ -11,7 +11,7 @@ var app = express.createServer();
 sinon.stub(app, 'post');
 
 var request = { headers: { host: 'HOST:PORT' } };
-var response = { send: function(status) { } };
+var response = { send: function() { } };
 
 vows
 .describe('pipeRoutes')
@@ -27,7 +27,7 @@ vows
       },
       'should bind add route': function(a) {
         assert(app.post.withArgs('/pipe', pipeRoutes.addPipe).calledOnce);
-      },
+      }
     },
     'calling addPipe successfully': {
       topic: function(r) {
@@ -41,7 +41,7 @@ vows
       },
       'should call send with id': function(e, d) {
        assert.equal(d.first.id, 42 ); 
-      },
+      }
     },
     'calling addPipe unsuccessfully': {
       topic: function(r) {
@@ -52,8 +52,8 @@ vows
       },
       'should call send with no data': function(e, d) {
         assert.equal(d.second, null); 
-      },
-    },
+      }
+    }
   }
 })
 .export(module);
