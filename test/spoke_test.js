@@ -9,7 +9,7 @@ var app = express.createServer();
 
 vows
 .describe('spoke')
-.addBatch({
+.addBatch({  
   'with valid port': {
     topic: 42,
     'calling start': {
@@ -17,26 +17,26 @@ vows
         sinon.stub(pipeRoutes, 'initialise');
         sinon.stub(app, 'listen');
         sinon.stub(express, 'createServer').returns(app);
-        spoke.start(42, this.callback);
+        spoke.start(port, this.callback);
       },
-      'should not error': function(e, d) {
+      'should not error': function(e) {
         assert.equal(e, null);
       },
-      'should call createServer once': function(e, d) {
-        assert(express.createServer.calledOnce);
+      'should call createServer once': function() {
+        assert.ok(express.createServer.calledOnce);
       },
-      'should call listen with correct port': function(e, d) {
-        assert(app.listen.withArgs(42).calledOnce);
+      'should call listen with correct port': function() {
+        assert.ok(app.listen.withArgs(42).calledOnce);
       },
-      'should initialise pipes routes': function(e, d) {
-        assert(pipeRoutes.initialise.withArgs(app).calledOnce);
+      'should initialise pipes routes': function() {
+        assert.ok(pipeRoutes.initialise.withArgs(app).calledOnce);
       },
-      teardown: function(port) {
+      teardown: function() {
         pipeRoutes.initialise.restore();
         app.listen.restore();
         express.createServer.restore();
       }
-    },
+    }
   }
 })
 .export(module);

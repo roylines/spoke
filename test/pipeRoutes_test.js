@@ -25,8 +25,8 @@ vows
       'should return app': function(a) {
         assert.equal(a, app);
       },
-      'should bind add route': function(a) {
-        assert(app.post.withArgs('/pipe', pipeRoutes.addPipe).calledOnce);
+      'should bind add route': function() {
+        assert.ok(app.post.withArgs('/pipe', pipeRoutes.addPipe).calledOnce);
       }
     },
     'calling addPipe successfully': {
