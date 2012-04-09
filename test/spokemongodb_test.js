@@ -12,10 +12,10 @@ vows
       return spokemongodb.configuration;
     },
     'should set default database': function(config) {
-      assert.equal(config.database, "spoke");
+      assert.equal(config.database, 'spoke');
     },
     'should set default host': function(config) {
-      assert.equal(config.host, "localhost");
+      assert.equal(config.host, 'localhost');
     },
     'should set default port': function(config) {
       assert.equal(config.port, mongodb.Connection.DEFAULT_PORT);
@@ -25,8 +25,6 @@ vows
     },
     'should set default password': function(config) {
       assert.equal(config.password, undefined);
-    },
-    teardown: function() {
     }
   }
 })
