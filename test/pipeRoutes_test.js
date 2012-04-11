@@ -26,8 +26,17 @@ vows
       'should return app': function(a) {
         assert.equal(a, app);
       },
-      'should bind add route': function() {
-        assert.ok(app.post.withArgs('/pipe', pipeRoutes.addPipe).calledOnce);
+      'should bind add pipe': function() {
+        assert.ok(app.post.withArgs('/pipe/:pipe', pipeRoutes.addPipe).calledOnce);
+      },
+      'should bind start stage': function() {
+        assert.ok(app.post.withArgs('/pipe/:pipe/stage/:stage/start', pipeRoutes.startStage).calledOnce);
+      },
+      'should bind end stage': function() {
+        assert.ok(app.post.withArgs('/pipe/:pipe/stage/:stage/end', pipeRoutes.endStage).calledOnce);
+      },
+      'should bind fail stage': function() {
+        assert.ok(app.post.withArgs('/pipe/:pipe/stage/:stage/fail', pipeRoutes.failStage).calledOnce);
       }
     },
     'calling addPipe': {
