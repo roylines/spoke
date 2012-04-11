@@ -5,7 +5,7 @@ var assert = require('assert'),
     sinon = require('sinon'),
     vows = require('vows');
 
-sinon.stub(pipes, 'add').yields(null);
+sinon.stub(pipes, 'start').yields(null);
 
 var app = express.createServer();
 sinon.stub(app, 'post');
@@ -26,8 +26,14 @@ vows
       'should return app': function(a) {
         assert.equal(a, app);
       },
-      'should bind add pipe': function() {
-        assert.ok(app.post.withArgs('/pipe/:pipe', pipeRoutes.addPipe).calledOnce);
+      'should bind start pipe (no params)': function() {
+        assert.ok(app.post.withArgs('/pipe/:pipe', pipeRoutes.startPipe).calledOnce);
+      },
+      'should bind start pipe': function() {
+        assert.ok(app.post.withArgs('/pipe/:pipe/start', pipeRoutes.startPipe).calledOnce);
+      },
+      'should bind start stage (no params)': function() {
+        assert.ok(app.post.withArgs('/pipe/:pipe/stage/:stage', pipeRoutes.startStage).calledOnce);
       },
       'should bind start stage': function() {
         assert.ok(app.post.withArgs('/pipe/:pipe/stage/:stage/start', pipeRoutes.startStage).calledOnce);
@@ -39,21 +45,21 @@ vows
         assert.ok(app.post.withArgs('/pipe/:pipe/stage/:stage/fail', pipeRoutes.failStage).calledOnce);
       }
     },
-    'calling addPipe': {
+    'calling startPipe': {
       topic: function(r) {
         sinon.stub(pipeRoutes, 'mapPipe').returns(samplePipe);
-        callAddPipe(r, null, 42, this.callback);
+        callStartPipe(r, null, 42, this.callback);
       },
       'should pass mapped pipe': function(e, d) {
-        assert.ok(pipes.add.withArgs(samplePipe).calledOnce); 
+        assert.ok(pipes.start.withArgs(samplePipe).calledOnce); 
       },
       teardown: function(e, d) {
         pipeRoutes.mapPipe.restore();
       }
     },
-    'calling addPipe successfully': {
+    'calling startPipe successfully': {
       topic: function(r) { 
-       callAddPipe(r, null, 42, this.callback);
+       callStartPipe(r, null, 42, this.callback);
       },
       'should call send with 201': function(e, d) {
         assert.equal(d.second, 201); 
@@ -65,9 +71,9 @@ vows
        assert.equal(d.first.id, 42 ); 
       }
     },
-    'calling addPipe unsuccessfully': {
+    'calling startPipe unsuccessfully': {
       topic: function(r) {
-        callAddPipe(r, 'ERROR', null, this.callback);
+        callStartPipe(r, 'ERROR', null, this.callback);
       },      
       'should call send with 500': function(e, d) {
         assert.equal(d.first, 500); 
@@ -80,9 +86,9 @@ vows
 })
 .export(module);
 
-var callAddPipe = function(route, addError, addData, callback) {
-  pipes.add.reset();
-  pipes.add.yields(addError, addData);
+var callStartPipe = function(route, addError, addData, callback) {
+  pipes.start.reset();
+  pipes.start.yields(addError, addData);
   response.send = function(a, b) { callback(null, { first: a, second: b }); };
-  route.addPipe(request, response);  
+  route.startPipe(request, response);  
 };
