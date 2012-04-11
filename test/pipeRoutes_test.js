@@ -3,6 +3,7 @@ var assert = require('assert'),
     pipes = require('../lib/pipes.js'),
     pipeRoutes = require('../lib/pipeRoutes.js'),
     sinon = require('sinon'),
+    stages = require('../lib/stages.js'),
     vows = require('vows');
 
 sinon.stub(pipes, 'start').yields(null);
@@ -12,7 +13,8 @@ sinon.stub(app, 'post');
 
 var request = { headers: { host: 'HOST:PORT' } };
 var response = { send: function() { } };
-var samplePipe = { field: 'data' };
+var samplePipe = { field: 'pipe' };
+var sampleStage = { field: 'stage' };
 
 vows
 .describe('pipeRoutes')
@@ -92,3 +94,4 @@ var callStartPipe = function(route, addError, addData, callback) {
   response.send = function(a, b) { callback(null, { first: a, second: b }); };
   route.startPipe(request, response);  
 };
+
