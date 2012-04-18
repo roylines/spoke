@@ -86,6 +86,37 @@ vows
     }
   }
 })
+.addBatch({
+  'with a valid request': {
+    topic: { 
+      param: function(name, def) {
+        if(name === 'pipe') {
+          return 'pipename';
+        }
+        if(name === 'stage') {
+          return 'stagename';
+        }
+        return 'unexpected';
+      } 
+    },
+    'calling mapPipe': { 
+      topic: function(request) {
+        return pipeRoutes.mapPipe(request);      
+      },
+      'should set name': function(pipe) {
+        assert.equal(pipe.name, 'pipename');
+      },
+    },
+    'calling mapStage': { 
+      topic: function(request) {
+        return pipeRoutes.mapStage(request);      
+      },
+      'should set name': function(stage) {
+        assert.equal(stage.name, 'stagename');
+      },
+    }
+  }
+})
 .export(module);
 
 var callStartPipe = function(route, addError, addData, callback) {
